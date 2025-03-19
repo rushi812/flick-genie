@@ -1,18 +1,60 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Header from "./Header";
 import { BG_URL } from "../utils/constants";
+import { checkValidData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 const Login = () => {
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
   const [isSignIn, setIsSignIn] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const handleToggleSignIn = () => {
     setIsSignIn(!isSignIn);
   };
 
+  const handleButtonClick = () => {
+    const email = emailRef.current.value;
+    const password = passwordRef.current.value;
+    const error = checkValidData(email, password);
+    if (error) return setErrorMessage(error);
+
+    if (!isSignIn) {
+      // SigUp Logic
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("RB:: user", user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(`${errorCode}: ${errorMessage}`);
+        });
+    } else {
+      // SignIn Logic
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const user = userCredential.user;
+          console.log("RB:: user", user);
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          setErrorMessage(`${errorCode}: ${errorMessage}`);
+        });
+    }
+  };
+
   return (
     <div className="h-full relative">
       <Header />
-      <div class="absolute inset-0 bg-black opacity-50" />
+      <div className="absolute inset-0 bg-black opacity-50" />
       <div className="h-full">
         <img
           src={BG_URL}
@@ -24,7 +66,10 @@ const Login = () => {
             <h1 className="text-[2rem] text-white mb-7 font-bold">
               {!isSignIn ? "Sign Up" : "Sign In"}
             </h1>
-            <form className="flex flex-col gap-4">
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={(e) => e.preventDefault()}
+            >
               {!isSignIn && (
                 <input
                   type="text"
@@ -33,16 +78,22 @@ const Login = () => {
                 />
               )}
               <input
+                ref={emailRef}
                 type="text"
                 placeholder="Email Address"
                 className="p-4 bg-transparent text-gray-400 border-gray-400 border-[1px] rounded-s"
               />
               <input
+                ref={passwordRef}
                 type="password"
                 placeholder="Password"
-                className="p-4 bg-transparent text-gray-400border-gray-400 border-[1px] rounded-s"
+                className="p-4 bg-transparent text-gray-400 border-gray-400 border-[1px] rounded-s"
               />
-              <button className="px-4 py-1 text-center min-h-10 bg-red-600 text-white rounded-s">
+              {!!errorMessage && <p className="text-red-500">{errorMessage}</p>}
+              <button
+                className="px-4 py-1 text-center min-h-10 bg-red-600 text-white rounded-s"
+                onClick={handleButtonClick}
+              >
                 {!isSignIn ? "Sign Up" : "Sign In"}
               </button>
               <p className="text-gray-400 text-center">OR</p>
