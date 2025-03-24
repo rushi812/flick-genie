@@ -6,3 +6,15 @@ export const BG_URL =
 
 export const DEFAULT_USER_AVATAR =
   "https://occ-0-4875-2164.1.nflxso.net/dnm/api/v6/vN7bi_My87NPKvsBoib006Llxzg/AAAABb81BxMNuz7x4Bt4RAxNIgMh7pbVFbyz41I_IQECtHpk_kZPBAdycxiJOgjo6l2lWKtPJrL4MsjQkrwg4oH4QcMYhE38863oceg0.png?r=cad";
+
+export const API_KEY = "abbe57dd5424ea784d4b66532bc0acb5";
+export const API_ACCESS_TOKEN =
+  "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhYmJlNTdkZDU0MjRlYTc4NGQ0YjY2NTMyYmMwYWNiNSIsIm5iZiI6MTc0MjgxNjg0NS41NTIsInN1YiI6IjY3ZTE0NjRkNGNlMDdkNjg0ZTA4MGJjNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.M4M9vjnJP8MTUU3Xrjdk8Zc_YlHQi-iF_Iyl5097yVs";
+
+export const API_OPTIONS = {
+  method: "GET",
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${API_ACCESS_TOKEN}`,
+  },
+};

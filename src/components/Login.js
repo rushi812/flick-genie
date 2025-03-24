@@ -1,57 +1,22 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Header from "./Header";
-import { BG_URL, DEFAULT_USER_AVATAR } from "../utils/constants";
+import { BG_URL } from "../utils/constants";
 import { checkValidData } from "../utils/validate";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import { auth } from "../utils/firebase";
-import { useDispatch } from "react-redux";
-import { addUser } from "../store/userSlice";
+import useAuth from "../hooks/useAuth";
 
 const Login = () => {
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
   const [isSignIn, setIsSignIn] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
 
-  const dispatch = useDispatch();
-
-  const handleSignUp = (email, password) => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        updateProfile(user, {
-          displayName: nameRef.current.value,
-          photoURL: DEFAULT_USER_AVATAR,
-        })
-          .then(() => {
-            const { uid, email, displayName, photoURL } = auth;
-            dispatch(addUser({ uid, email, displayName, photoURL }));
-          })
-          .catch((error) => setErrorMessage(error.message));
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        setErrorMessage(`${errorCode}: ${errorMessage}`);
-      });
-  };
-
-  const handleSignIn = (email, password) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        setErrorMessage(`${errorCode}: ${errorMessage}`);
-      });
-  };
+  const {
+    handleSignIn,
+    handleSignUp,
+    handleUpdateProfile,
+    errorMessage,
+    setErrorMessage,
+  } = useAuth();
 
   const handleButtonClick = () => {
     const email = emailRef.current.value;
@@ -59,7 +24,10 @@ const Login = () => {
     const error = checkValidData(email, password);
     if (error) return setErrorMessage(error);
 
-    if (!isSignIn) return handleSignUp(email, password);
+    if (!isSignIn)
+      return handleSignUp(email, password).then((user) => {
+        handleUpdateProfile(user, nameRef?.current?.value);
+      });
     else return handleSignIn(email, password);
   };
 
