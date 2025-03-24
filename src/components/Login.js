@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import Header from "./Header";
-import { BG_URL } from "../utils/constants";
+import { BG_URL, DEFAULT_USER_AVATAR } from "../utils/constants";
 import { checkValidData } from "../utils/validate";
 import {
   createUserWithEmailAndPassword,
@@ -8,9 +8,8 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addUser } from "../utils/userSlice";
+import { addUser } from "../store/userSlice";
 
 const Login = () => {
   const nameRef = useRef(null);
@@ -19,10 +18,40 @@ const Login = () => {
   const [isSignIn, setIsSignIn] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleToggleSignIn = () => setIsSignIn(!isSignIn);
+  const handleSignUp = (email, password) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        updateProfile(user, {
+          displayName: nameRef.current.value,
+          photoURL: DEFAULT_USER_AVATAR,
+        })
+          .then(() => {
+            const { uid, email, displayName, photoURL } = auth;
+            dispatch(addUser({ uid, email, displayName, photoURL }));
+          })
+          .catch((error) => setErrorMessage(error.message));
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrorMessage(`${errorCode}: ${errorMessage}`);
+      });
+  };
+
+  const handleSignIn = (email, password) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        setErrorMessage(`${errorCode}: ${errorMessage}`);
+      });
+  };
 
   const handleButtonClick = () => {
     const email = emailRef.current.value;
@@ -30,40 +59,8 @@ const Login = () => {
     const error = checkValidData(email, password);
     if (error) return setErrorMessage(error);
 
-    if (!isSignIn) {
-      // SigUp Logic
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          updateProfile(user, {
-            displayName: nameRef.current.value,
-            photoURL: "https://avatars.githubusercontent.com/u/30559994?v=4",
-          })
-            .then(() => {
-              const { uid, email, displayName, photoURL } = auth;
-              dispatch(addUser({ uid, email, displayName, photoURL }));
-              navigate("/browse");
-            })
-            .catch((error) => setErrorMessage(error.message));
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(`${errorCode}: ${errorMessage}`);
-        });
-    } else {
-      // SignIn Logic
-      signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          console.log("RB:: user", user);
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          setErrorMessage(`${errorCode}: ${errorMessage}`);
-        });
-    }
+    if (!isSignIn) return handleSignUp(email, password);
+    else return handleSignIn(email, password);
   };
 
   return (
@@ -113,7 +110,7 @@ const Login = () => {
                 {!isSignIn ? "Sign Up" : "Sign In"}
               </button>
               <p className="text-gray-400 text-center">OR</p>
-              <div onClick={handleToggleSignIn}>
+              <div onClick={() => setIsSignIn(!isSignIn)}>
                 {!isSignIn ? (
                   <>
                     <span className="text-gray-400 font-light mr-2">

@@ -1,8 +1,8 @@
 import { Provider } from "react-redux";
-import appStore from "./utils/appStore";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Browse from "./components/Browse";
 import Body from "./components/Body";
+import appStore from "./store/appStore";
 
 function App() {
   const appRouter = createBrowserRouter([
