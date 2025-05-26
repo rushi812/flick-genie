@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { LOGO_URL } from "../utils/constants";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
@@ -12,7 +12,7 @@ const Header = () => {
   const user = useSelector((store) => store.user);
 
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         const { uid, email, displayName, photoURL } = user;
         dispatch(addUser({ uid, email, displayName, photoURL }));
@@ -22,6 +22,8 @@ const Header = () => {
         navigate("/");
       }
     });
+
+    return () => unsubscribe();
   }, []);
 
   const handleSignOut = () => {
@@ -31,7 +33,7 @@ const Header = () => {
   };
 
   return (
-    <div className="absolute w-full h-auto px-8 py-2 z-[1]">
+    <div className="absolute w-full h-auto px-8 py-2 z-[1] bg-gradient-to-b from-black">
       <div className="flex items-center justify-between">
         <img src={LOGO_URL} alt="Netflix Logo" className="w-44" />
         {!!user && (
