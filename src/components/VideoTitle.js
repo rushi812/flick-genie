@@ -1,3 +1,6 @@
+import Info from "../icons/Info";
+import Play from "../icons/Play";
+
 const VideoTitle = ({ title, overview }) => {
   return (
     <div className="absolute top-0 w-screen aspect-video bg-gradient-to-r from-black">
@@ -6,10 +9,16 @@ const VideoTitle = ({ title, overview }) => {
         <p className="text-[1.2vw] text-white">{overview}</p>
         <div className="flex items-center gap-2 mt-[1.5vw]">
           <button className="py-2 px-7 bg-white text-black text-[1.2vw] font-medium rounded hover:bg-opacity-80">
-            ▶️ Play
+            <div className="flex items-center gap-1">
+              <Play />
+              <span>Play</span>
+            </div>
           </button>
           <button className="py-2 px-7 bg-gray-500 text-white bg-opacity-70 hover:bg-opacity-50 text-[1.2vw] font-medium rounded">
-            ℹ More Info
+            <div className="flex items-center gap-1">
+              <Info />
+              <span>More Info</span>
+            </div>
           </button>
         </div>
       </div>
