@@ -3,11 +3,12 @@ import {
   signInWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+
 import { addUser } from "../store/userSlice";
 import { DEFAULT_USER_AVATAR } from "../utils/constants";
-import { useState } from "react";
 import { auth } from "../utils/firebase";
-import { useDispatch } from "react-redux";
 
 const useAuth = () => {
   const [errorMessage, setErrorMessage] = useState(null);

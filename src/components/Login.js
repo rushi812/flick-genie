@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import Header from "./Header";
+
+import useAuth from "../hooks/useAuth";
 import { BG_URL } from "../utils/constants";
 import { checkValidData } from "../utils/validate";
-import useAuth from "../hooks/useAuth";
+import Header from "./Header";
 
 const Login = () => {
   const nameRef = useRef(null);

@@ -1,10 +1,12 @@
-import { useEffect } from "react";
-import { LOGO_URL } from "../utils/constants";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import { toggleGPTSearch } from "../store/gptSlice";
 import { addUser, removeUser } from "../store/userSlice";
+import { LOGO_URL } from "../utils/constants";
+import { auth } from "../utils/firebase";
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -26,6 +28,10 @@ const Header = () => {
     return () => unsubscribe();
   }, []);
 
+  const handleGPTSearchClick = () => {
+    dispatch(toggleGPTSearch());
+  };
+
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {})
@@ -38,13 +44,19 @@ const Header = () => {
         <img src={LOGO_URL} alt="Netflix Logo" className="w-44" />
         {!!user && (
           <div className="flex items-center gap-2">
+            <button
+              className="px-4 py-1 text-center bg-purple-600 hover:bg-purple-700 text-white rounded-md"
+              onClick={handleGPTSearchClick}
+            >
+              GPT Search
+            </button>
             <img
               className="rounded-md overflow-hidden h-8 w-8"
               src={user.photoURL}
               alt="User Profile"
             />
             <button
-              className="px-4 py-1 text-center bg-red-600 text-white rounded-md"
+              className="px-4 py-1 text-center bg-red-600 hover:bg-red-700 text-white rounded-md"
               onClick={handleSignOut}
             >
               Sign Out
