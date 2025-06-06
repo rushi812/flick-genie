@@ -16,7 +16,7 @@ const VideoBackground = ({ movie }) => {
           src={`https://www.youtube.com/embed/${trailer.key}?si=bknTPjM5UvpBXBEG&autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&mute=1`}
           title={`${movie.original_title} Trailer`}
           allow="autoplay; encrypted-media;"
-          referrerpolicy="strict-origin-when-cross-origin"
+          referrerPolicy="strict-origin-when-cross-origin"
         />
       )}
     </div>

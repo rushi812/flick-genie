@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -44,43 +45,53 @@ const Header = () => {
       .catch((error) => {});
   };
 
-  return (
-    <div className="absolute w-full h-auto px-8 py-2 z-[1] bg-gradient-to-b from-black">
-      <div className="flex items-center justify-between">
-        <img src={LOGO_URL} alt="Netflix Logo" className="w-44" />
-        {!!user && (
-          <div className="flex items-center gap-2">
-            {showGPTSearch && (
-              <select
-                className="p-1 bg-gray-500 text-white"
-                onChange={handleLanguageChange}
-              >
-                {SUPPORTED_LANGUAGES.map(({ identifier, name }) => (
-                  <option key={identifier} value={identifier}>
-                    {name}
-                  </option>
-                ))}
-              </select>
-            )}
-            <button
-              className="px-4 py-1 text-center bg-purple-600 hover:bg-purple-700 text-white rounded-md"
-              onClick={handleGPTSearchClick}
-            >
-              {showGPTSearch ? "Home" : "GPT Search"}
-            </button>
-            <img
-              className="rounded-md overflow-hidden h-8 w-8"
-              src={user.photoURL}
-              alt="User Profile"
-            />
-            <button
-              className="px-4 py-1 text-center bg-red-600 hover:bg-red-700 text-white rounded-md"
-              onClick={handleSignOut}
-            >
-              Sign Out
-            </button>
-          </div>
+  const renderActions = () => {
+    if (!user) return null;
+    return (
+      <div className="flex items-center gap-2">
+        {showGPTSearch && (
+          <select
+            className="p-1 bg-gray-500 text-white"
+            onChange={handleLanguageChange}
+          >
+            {SUPPORTED_LANGUAGES.map(({ identifier, name }) => (
+              <option key={identifier} value={identifier}>
+                {name}
+              </option>
+            ))}
+          </select>
         )}
+        <button
+          className="px-4 py-1 text-center bg-purple-600 hover:bg-purple-700 text-white rounded-md"
+          onClick={handleGPTSearchClick}
+        >
+          {showGPTSearch ? "Home" : "GPT Search"}
+        </button>
+        <img
+          className="rounded-md overflow-hidden h-8 w-8"
+          src={user.photoURL}
+          alt="User Profile"
+        />
+        <button
+          className="px-4 py-1 text-center bg-red-600 hover:bg-red-700 text-white rounded-md"
+          onClick={handleSignOut}
+        >
+          Sign Out
+        </button>
+      </div>
+    );
+  };
+
+  return (
+    <div
+      className={clsx(
+        "relative w-full h-auto px-8 py-2 z-[1] bg-gradient-to-b from-black",
+        !showGPTSearch && "md:absolute bg-black md:bg-transparent",
+      )}
+    >
+      <div className="flex items-center flex-col md:flex-row md:justify-between">
+        <img src={LOGO_URL} alt="Netflix Logo" className="w-44" />
+        {renderActions()}
       </div>
     </div>
   );
